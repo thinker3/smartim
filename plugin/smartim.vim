@@ -16,6 +16,10 @@ if !exists("g:smartim_default")
   let g:smartim_default = "com.apple.keylayout.US"
 endif
 
+if !exists("g:smartim_default_cn")
+  let g:smartim_default_cn = 'com.aodaren.inputmethod.Qingg'
+endif
+
 if !exists("g:smartim_disable")
   let g:smartim_disable = 0
 endif
@@ -83,11 +87,20 @@ function! Smartim_SelectSaved()
   endif
 endfunction
 
+function! Smartim_SelectDetected()
+  let l:char = getline('.')[col('.') - 2]
+  let l:cn_mode = l:char >= "\x80"
+  if l:cn_mode
+    silent call system(s:imselect_path . g:smartim_default_cn)
+  endif
+endfunction
+
 augroup smartim
   autocmd!
   autocmd VimLeavePre * call Smartim_SelectDefault()
   autocmd InsertLeave * call Smartim_SelectDefault()
-  autocmd InsertEnter * call Smartim_SelectSaved()
+  "autocmd InsertEnter * call Smartim_SelectSaved()
+  autocmd InsertEnter * call Smartim_SelectDetected()
 augroup end
 
 " vim:ts=2:sw=2:sts=2
